@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+- phpMyAdmin XML Dump
+- version 4.9.0.1
+- https://www.phpmyadmin.net
+-
+- Servidor: 127.0.0.1
+- Tiempo de generación: 10-04-2020 a las 04:32:09
+- Versión del servidor: 10.3.15-MariaDB
+- Versión de PHP: 7.1.30
+-->
+
+<pma_xml_export version="1.0" xmlns:pma="https://www.phpmyadmin.net/some_doc_url/">
+    <!--
+    - Structure schemas
+    -->
+    <pma:structure_schemas>
+        <pma:database name="chat" collation="latin1_bin" charset="latin1">
+            <pma:table name="personas">
+                CREATE TABLE `personas` (
+                  `id` int(10) NOT NULL,
+                  `nombre` varchar(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+                  `apellido` varchar(40) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+                  PRIMARY KEY (`id`)
+                ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_bin;
+            </pma:table>
+        </pma:database>
+    </pma:structure_schemas>
+
+    <!--
+    - Base de datos: 'chat'
+    -->
+    <database name="chat">
+        <!-- Tabla personas -->
+        <table name="personas">
+            <column name="id">1</column>
+            <column name="nombre">DANIEL</column>
+            <column name="apellido">SALAZAR</column>
+        </table>
+        <table name="personas">
+            <column name="id">2</column>
+            <column name="nombre">PAOLA</column>
+            <column name="apellido">GUZMAN</column>
+        </table>
+        <table name="personas">
+            <column name="id">3</column>
+            <column name="nombre">JUAN</column>
+            <column name="apellido">JIMENEZ</column>
+        </table>
+        <table name="personas">
+            <column name="id">4</column>
+            <column name="nombre">JULIANA</column>
+            <column name="apellido">SALDAÑA</column>
+        </table>
+    </database>
+</pma_xml_export>

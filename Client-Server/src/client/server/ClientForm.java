@@ -5,46 +5,47 @@
  */
 package client.server;
 
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author Daniel
  */
-public class ServerForm extends javax.swing.JFrame {
-    
-    ServerSocket server = null;
-    Socket client = null;
-    DataOutputStream dos = null;
+public class ClientForm extends javax.swing.JFrame {
+
+    Socket server = null;
     DataInputStream dis = null;
+    DataOutputStream dos = null;
     
-    //para coneccion -------------------
+    // para coneccion 
     private String buscar="";
     private String user = "root";
     private String password = "";
     private String url = "jdbc:mysql://localhost:3306/chat";
     private ResultSet rs,rs1;
     private Object[] fila = new Object[3];
+    //-----------------
     
-    //-----------------------------------
-
     /**
-     * Creates new form ServerForm
+     * Creates new form ClientRorm
      */
-    public ServerForm() {
-        super("SERVER");
+    public ClientForm() {
+        super("CLIENT");
         initComponents();
     }
 
@@ -57,49 +58,42 @@ public class ServerForm extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        boton_iniciar = new javax.swing.JButton();
+        boton_conectar = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         txt_RecMsg = new javax.swing.JTextArea();
         txt_msg = new javax.swing.JTextField();
-        boton_enviar = new javax.swing.JButton();
         boton_buscar = new javax.swing.JButton();
+        boton_enviar = new javax.swing.JButton();
         label_fondo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        boton_iniciar.setBackground(new java.awt.Color(204, 204, 204));
-        boton_iniciar.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        boton_iniciar.setText("Start Server");
-        boton_iniciar.addActionListener(new java.awt.event.ActionListener() {
+        boton_conectar.setBackground(new java.awt.Color(204, 204, 204));
+        boton_conectar.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        boton_conectar.setText("Connect");
+        boton_conectar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                boton_iniciarActionPerformed(evt);
+                boton_conectarActionPerformed(evt);
             }
         });
-        getContentPane().add(boton_iniciar, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 20, 140, 50));
+        getContentPane().add(boton_conectar, new org.netbeans.lib.awtextra.AbsoluteConstraints(37, 22, 110, 50));
 
         txt_RecMsg.setBackground(new java.awt.Color(204, 204, 204));
         txt_RecMsg.setColumns(20);
-        txt_RecMsg.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         txt_RecMsg.setRows(5);
         jScrollPane1.setViewportView(txt_RecMsg);
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 130, 370, 110));
 
         txt_msg.setBackground(new java.awt.Color(204, 204, 204));
-        txt_msg.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
-        getContentPane().add(txt_msg, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 270, 370, 40));
-
-        boton_enviar.setBackground(new java.awt.Color(204, 204, 204));
-        boton_enviar.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        boton_enviar.setText("Send");
-        boton_enviar.addActionListener(new java.awt.event.ActionListener() {
+        txt_msg.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                boton_enviarActionPerformed(evt);
+                txt_msgActionPerformed(evt);
             }
         });
-        getContentPane().add(boton_enviar, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 370, 150, 50));
+        getContentPane().add(txt_msg, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 270, 370, 40));
 
         boton_buscar.setBackground(new java.awt.Color(204, 204, 204));
         boton_buscar.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
@@ -111,89 +105,111 @@ public class ServerForm extends javax.swing.JFrame {
         });
         getContentPane().add(boton_buscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 270, 160, 40));
 
+        boton_enviar.setBackground(new java.awt.Color(204, 204, 204));
+        boton_enviar.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        boton_enviar.setText("Send");
+        boton_enviar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                boton_enviarActionPerformed(evt);
+            }
+        });
+        getContentPane().add(boton_enviar, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 370, 150, 50));
+
         label_fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/fondo.jpg"))); // NOI18N
         getContentPane().add(label_fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void boton_iniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton_iniciarActionPerformed
+    private void boton_conectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton_conectarActionPerformed
         try {
             // TODO add your handling code here:
-            server = new ServerSocket(6969);
-            client = server.accept();
-            JOptionPane.showMessageDialog(null,"Cliente Aceptado");
-            dos = new DataOutputStream(client.getOutputStream());
+            server = new Socket("127.0.0.1",6969);
+            JOptionPane.showMessageDialog(null,"Conectado al Servidor");
+            dis = new DataInputStream(server.getInputStream());
+            dos = new DataOutputStream(server.getOutputStream());
             
-            dis = new DataInputStream(client.getInputStream());
-            ReceiveMessage serverThread = new ReceiveMessage(dis,txt_RecMsg);
-            serverThread.setDaemon(true);
-            serverThread.setName("Cliente");
-            serverThread.start();
+            ReceiveMessage clientThread = new ReceiveMessage(dis, txt_RecMsg);
+            clientThread.setDaemon(true);
+            clientThread.setName("Server :");
+            clientThread.start();
             
+        } catch (UnknownHostException ex) {
+            JOptionPane.showMessageDialog(null,"Conexion Fallida");
         } catch (IOException ex) {
-            JOptionPane.showMessageDialog(null,"Cliente no Disponible");
-            Logger.getLogger(ServerForm.class.getName()).log(Level.SEVERE,null,ex);
+            JOptionPane.showMessageDialog(null,"Conexion Fallida");
         }
-    }//GEN-LAST:event_boton_iniciarActionPerformed
+        
+    }//GEN-LAST:event_boton_conectarActionPerformed
 
-    private void boton_enviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton_enviarActionPerformed
+    private void txt_msgActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_msgActionPerformed
         // TODO add your handling code here:
-        try {
-            dos.writeUTF(txt_msg.getText());
-        } catch (IOException ex) {
-            Logger.getLogger(ServerForm.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        txt_msg.setText("");
-    }//GEN-LAST:event_boton_enviarActionPerformed
+    }//GEN-LAST:event_txt_msgActionPerformed
 
     private void boton_buscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton_buscarActionPerformed
-        // TODO add your handling code here:
+        
+        buscar = txt_msg.getText().toUpperCase();
+      
         try {
-            // TODO add your handling code here:
+
+        for(int i=0;i<=2;i++)
+        {
+            fila[i]="0";
+        }
+
+        Connection conexion = DriverManager.getConnection(url, user, password);
+        Statement s = conexion.createStatement();
             
-            for(int i=0;i<=2;i++)
-            {
-                fila[i]="0";
-            }
-            buscar = txt_msg.getText().toUpperCase();
+        rs = s.executeQuery ("select * from personas where nombre like '"+buscar+"'");
+        
+ 
+        while(rs.next())
+        {
+            fila[0] = rs.getString(1);
+            fila[1] = rs.getString(2);
+            fila[2] = rs.getString(3);
+        }
             
-            Connection conexion = DriverManager.getConnection(url, user, password);
-            Statement s = conexion.createStatement();
+        if(fila[0] == "0")
+        {
+            rs = s.executeQuery ("select * from personas where apellido like '"+buscar+"'");
             
-            rs = s.executeQuery ("select * from personas where nombre like '%"+buscar+"%'");
-           
             while(rs.next())
             {
                 fila[0] = rs.getString(1);
                 fila[1] = rs.getString(2);
                 fila[2] = rs.getString(3);
             }
-            
-            if(fila[0] == "0")
-            {
-                rs = s.executeQuery ("select * from personas where apellido like '%"+buscar+"%'");
-                while(rs.next())
-                {
-                    fila[0] = rs.getString(1);
-                    fila[1] = rs.getString(2);
-                    fila[2] = rs.getString(3);
-                }
-            }
+        }
                   
-            if(fila[0] == "0")
-            {
-               JOptionPane.showMessageDialog(null,"Persona no encontrada"); 
-            }
-            else
-            {
-                txt_msg.setText(fila[1]+" "+fila[2] );
-            }
+        if(fila[0] == "0")
+        {
+            JOptionPane.showMessageDialog(null,"Persona no encontrada"); 
+        }
+        else
+        {
+            txt_msg.setText(fila[1]+" "+fila[2] );
+        }
                      
         } catch (SQLException ex) {
             Logger.getLogger(ClientForm.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        
+       
+        
     }//GEN-LAST:event_boton_buscarActionPerformed
+
+    private void boton_enviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton_enviarActionPerformed
+        // TODO add your handling code here:
+        try {
+            dos.writeUTF(txt_msg.getText());
+        } catch (IOException ex) {
+            Logger.getLogger(ClientForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        txt_msg.setText("");
+
+    }//GEN-LAST:event_boton_enviarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -212,28 +228,29 @@ public class ServerForm extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ServerForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ClientForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ServerForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ClientForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ServerForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ClientForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ServerForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ClientForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ServerForm().setVisible(true);
+                new ClientForm().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton boton_buscar;
+    private javax.swing.JButton boton_conectar;
     private javax.swing.JButton boton_enviar;
-    private javax.swing.JButton boton_iniciar;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel label_fondo;
     private javax.swing.JTextArea txt_RecMsg;
